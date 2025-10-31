@@ -1,0 +1,40 @@
+<head>
+  <title>ch4. 함수와 스코프</title>
+</head>
+<body>
+  <h2>함수와 스코프</h2>
+  <h1>var와 let의 스코프(Scope) 차이 확인</h1>
+    <p>결과는 브라우저의 Console 탭에서 확인하세요.</p>
+    
+    <script>
+        console.log("--- 1. 호이스팅 및 선언 전 사용 ---");
+        console.log(`var_value (선언 전): ${var_value}`); 
+        var var_value = "나는 var로 선언되었어요";
+        console.log(`var_value (선언 후): ${var_value}`);
+
+        console.log("let_value (선언 전): 실행할 수 없습니다.");
+        
+        console.log("\n--- 2. 블록 스코프 차이 ---");
+        
+        if (true) {
+            var var_in_block = "var: 나는 블록 안에서 선언되었어요";
+            let let_in_block = "let: 나는 블록 안에서 선언되었어요";
+            
+            console.log("블록 내부 - var:", var_in_block);
+            console.log("블록 내부 - let:", let_in_block);
+        }
+
+        console.log("\n블록 외부에서 접근 시:");
+        
+        console.log("var_in_block (블록 외부):", var_in_block);
+        
+        try {
+            console.log("let_in_block (블록 외부):", let_in_block);
+        } catch (error) {
+            console.error("let_in_block (블록 외부):", error.name, "- 접근 불가");
+        }
+    </script>
+
+    
+</body>
+</html>
