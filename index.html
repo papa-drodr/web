@@ -1,15 +1,43 @@
-<HTML>
-  <HEAD>
-    
-  </HEAD>
-  <BODY>
-    <H1>Web programing</H1>
-    <a href="ch/ch1.html">ch1. 자바스크립트 시작하기</a>
-    <a href="ch/ch2.html">ch2. 변수와 자료형</a>
-    <a href="ch/ch3.html">ch3. 연산자와 제어문</a>
-    <a href="ch/ch4.html">ch4. 함수와 스코프</a>
-    <a href="ch/ch5.html">ch5. DOM 기초</a>
-    <a href="ch/ch6.html">ch6. 이벤트와 이벤트 처리</a>
-    <a href="ch/ch7.html">ch7. DOM 활용하기</a>
-  </BODY>
-</HTML>
+<!doctype HTML>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>돈의 시간</title>
+
+  <script>
+  fetch('https://api.exchangerate.host/latest?base=USD&symbols=KRW')
+  </script>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>돈의 시간</h1>
+    </div>
+    <div class="tab">
+      <div>환율 추이</div>
+      <div>환율 비교</div>
+    </div>
+  </header>
+
+  <div>
+    <main>
+      <section class="left">
+        <h2>환율 추이 그래프</h2>
+        <div class="graph">미국 달러 (USD)</div>
+        <div class="graph">일본 엔 (JPY)</div>
+        <div class="graph">유로 (EUR)</div>
+      </section>
+      <section class="left">
+        <h2>세계 각종 소식</h2>
+        <div>축구 이적시장</div>
+        <div>수출</div>
+      </section>
+      <section class="right">
+        <h2>환율 계산기</h2>
+          <div class="cal">계산기</div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>
