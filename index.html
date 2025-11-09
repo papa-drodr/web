@@ -1,43 +1,95 @@
 <!doctype HTML>
 <html lang="ko">
+
 <head>
   <meta charset="utf-8">
-  <title>돈의 시간</title>
-
-  <script>
-  fetch('https://api.exchangerate.host/latest?base=USD&symbols=KRW')
-  </script>
+  <title>Cal Money</title>
 </head>
+
 <body>
+  <!-- ==== 헤더 ==== -->
   <header>
-    <div>
-      <h1>돈의 시간</h1>
-    </div>
-    <div class="tab">
-      <div>환율 추이</div>
-      <div>환율 비교</div>
+    <div class="header-inner">
+      <div class="brand"><h1>Cal Money</h1></div>
+      <nav class="tabs" role="tablist">
+        <button class="tab-btn" id="tab-graph" aria-selected="true">환율 그래프</button>
+        <button class="tab-btn" id="tab-soccer" aria-selected="false">축구로 보는 환율</button>
+      </nav>
     </div>
   </header>
 
-  <div>
-    <main>
-      <section class="left">
-        <h2>환율 추이 그래프</h2>
-        <div class="graph">미국 달러 (USD)</div>
-        <div class="graph">일본 엔 (JPY)</div>
-        <div class="graph">유로 (EUR)</div>
-      </section>
-      <section class="left">
-        <h2>세계 각종 소식</h2>
-        <div>축구 이적시장</div>
-        <div>수출</div>
-      </section>
-      <section class="right">
-        <h2>환율 계산기</h2>
-          <div class="cal">계산기</div>
-      </section>
-
-    </main>
-  </div>
+  <!-- ==== 메인 ==== -->
+  <main>
+    <!-- ==== 왼쪽: 그래프/ 축구 콘텐츠 ==== -->
+    <section class="panel" id="left-panel">
+      <!-- ==== 그래프 ==== -->
+      <div id="view-graph">
+        <h2 id="graph-title">환율 (최근 90일)</h2>
+        <div class="switcher">
+          <button class="chip active" data-base="USD">달러 (USD)</button>
+          <button class="chip" data-base="JPY">엔화 (JPY)</button>
+          <button class="chip" data-base="EUR">유로 (EUR)</button>
+          <button class="chip" data-base="GBP">파운드 (GBP)</button>
+        </div>
+        <div class="switcher" aria-label="기간 선택">
+          <button class="chip active" data-days="30">최근 30일</button>
+          <button class="chip" data-days="90">최근 90일</button>
+          <button class="chip" data-days="180">최근 180일</button>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart"></canvas>
+        </div>
+        <p class="muted">출처: Fawaz Ahmed Currency API</p>
+      </div>
+      <!-- ==== 축구 ==== -->
+      <div id="view-soccer" style="display: none">
+        <h2>축구로보는 환율</h2>
+      </div>
+    </section>
+    <!-- ==== 오른쪽: 기준 환율/ 계산기 ==== -->
+    <section class="panel">
+      <!-- ==== 기준 환율 ==== -->
+      <div class="quick-rates" id="quick-rates">
+        <h3 class="quick-title">기준 환율</h3>
+        <div class="qr-grid">
+          <div class="qr-card"><div class="qr-label">1 USD</div><div class="qr-value" id="qr-usd">—</div></div>
+          <div class="qr-card"><div class="qr-label">1 JPY</div><div class="qr-value" id="qr-jpy">—</div></div>
+          <div class="qr-card"><div class="qr-label">1 EUR</div><div class="qr-value" id="qr-eur">—</div></div>
+          <div class="qr-card"><div class="qr-label">1 GBP</div><div class="qr-value" id="qr-gbp">—</div></div>
+        </div>
+        <p class="muted" id="qr-updated">기준 시각 —</p>
+      </div>
+      <!-- ==== 환율 계산기 ==== -->
+      <h2>환율 계산기</h2>
+      <div class="calc">
+        <div class="field"><label for="amount">금액</label><input id="amount" type="number" value="1"></div>
+        <div class="row2">
+          <div class="field">
+            <label for="from">FROM</label>
+            <select id="from">
+              <option selected>USD</option>
+              <option>JPY</option>
+              <option>EUR</option>
+              <option>KRW</option>
+              <option>GBP</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="to">TO</label>
+            <select id="to">
+              <option>USD</option>
+              <option>JPY</option>
+              <option>EUR</option>
+              <option selected>KRW</option>
+              <option>GBP</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" id="convert">환전</button>
+        <div class="result" id="convert-result">= </div>
+        <div class="rate-note" id="rate-note"></div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
