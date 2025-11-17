@@ -1,0 +1,205 @@
+:root{
+    --bg: #0a1020; /* 배경색 */
+    --card: #111a2e; /* 카드 배경색 */
+    --muted:#b7c0d1; /* 흐린 색 (흐린 글자 등에 사용)*/
+    --fg: #e9eef7; /* 글자 색 */
+    --accent: #5aa9ff; /* 포인트 색 */
+    --chip: #1b2744;  /* 칩 색 */
+    --chip-active: #2e437a; /* 활성화 칩 색 */
+    --grid: #ffffff10; /* 격자 선 색 */
+}
+
+*{box-sizing: border-box;}
+
+body{ /* 배경 */
+    margin: 0;
+    font: 14px/1.45 system-ui, -apple-system, Segoe UI,Roboto, "Noto Sans KR", sans-serif;
+    color: var(--muted);
+    background: linear-gradient(180deg,#060a14,#0a1020 40%);
+}
+
+/* 상단 탭 */
+header{ 
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    backdrop-filter: saturate(120%) blur;
+    background: #0a1020cc;
+    border-bottom: 1px solid #ffffff14
+}
+.header-inner{
+    max-width: 1200px; 
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px
+}
+.brand h1{ /* 사이트 이름 */
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: .5px;
+}
+.tabs{
+    display: flex;
+    gap: 8px;
+}
+.tab-btn{ /* 버튼 */
+    all: unset;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--muted);
+    font-weight: 600;
+}
+.tab-btn[aria-selected="true"]{ /* 버튼 클릭시 */
+    background: var(--chip-active);
+    color: var(--fg);
+    box-shadow: 0 0 0 1px #ffffff22 inset;
+}
+
+/* 메인 */
+main{ 
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 3fr 2fr; /* 왼쪽 오른쪽 비율 */
+    gap: 16px   
+}
+.panel{
+    background: var(--card);
+    border: 1px solid #ffffff14;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 6px 24px #00000040;
+}
+
+/* 그래프 */
+#graph-title{margin: 0 0 8px;}
+.switcher{ 
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 8px 0 12px;
+}
+.chip{ /* 그래프 버튼 */
+    all: unset;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--muted);
+    font-weight: 600;
+    border: 1px solid transparent
+}
+.chip.active{ /* 그래프 버튼 활성화 */
+    background: var(--chip-active);
+    color: var(--fg);
+    border-color: #ffffff22;
+}
+.chart-wrap{ /* 그래프 패널 */
+    position: relative;
+    height: 360px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ffffff10;
+    background: #0d1630;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chart-wrap canvas{
+    width:100% !important;
+    height:100% !important
+}
+
+/* 기준 환율 */
+.quick-rates{margin-bottom: 14px;}
+.quick-title{
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #cfe0ff;
+}
+.qr-grid{ /* 기준 환율 그리드 */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    align-items: stretch;
+}
+.qr-grid > *{min-width: 0;} /* 줄바꿈 허용 */
+.qr-card{
+    background: #0f1831;
+    border: 1px solid #ffffff22;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    height: 100%;
+    min-height: 72px;
+}
+.qr-label{
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+.qr-value{
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* 계산기 */
+.calc{
+    display: grid;
+    gap: 10px
+}
+.row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+label{
+    display: block;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+input[type="number"], select{
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #ffffff22;
+    background: #0f1831;
+    color: var(--fg)
+}
+input[type="number"]::-webkit-inner-spin-button, /* 브라우저 기본 화살표 제거 */
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cal-btn{
+    cursor: pointer;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #041427;
+    font-weight: 800;
+}
+.result{
+    font-size: 20px;
+    font-weight: 800;
+    padding: 14px 10px;
+    background: #0f1831;
+    border: 1px solid #ffffff22;
+    border-radius: 10px;
+    color: #5aa9ff;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-indent: 8px;
+}

@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="/style/index.css"></link>
   <title>Cal Money</title>
 </head>
 
@@ -62,7 +63,10 @@
       <!-- ==== 환율 계산기 ==== -->
       <h2>환율 계산기</h2>
       <div class="calc">
-        <div class="field"><label for="amount">금액</label><input id="amount" type="number" value="1"></div>
+        <div class="field">
+          <label for="amount">금액</label>
+          <input id="amount" type="number" value="0">
+        </div>
         <div class="row2">
           <div class="field">
             <label for="from">FROM</label>
@@ -85,7 +89,7 @@
             </select>
           </div>
         </div>
-        <button class="btn" id="convert">환전</button>
+        <button class="cal-btn" id="convert">계산</button>
         <div class="result" id="convert-result">= </div>
         <div class="rate-note" id="rate-note"></div>
       </div>
