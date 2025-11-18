@@ -9,7 +9,7 @@
 { "id": 2, "title": "test2" }
 ],
 "comments": [
-{ "id": 1, "body": "some comment", “user": “khlee” },
+{ "id": 1, "body": "some comment", “user": “papa-drodr” },
 { "id": 2, "body": "some comment", “user": “other” }
 ],
 "profile": {
