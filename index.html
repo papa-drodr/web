@@ -25,14 +25,14 @@
     <section class="panel" id="left-panel">
       <!-- ==== 그래프 ==== -->
       <div id="view-graph">
-        <h2 id="graph-title">환율 (최근 90일)</h2>
+        <h2 id="graph-title"></h2>
         <div class="switcher">
           <button class="chip active" data-base="USD">달러 (USD)</button>
           <button class="chip" data-base="JPY">엔화 (JPY)</button>
           <button class="chip" data-base="EUR">유로 (EUR)</button>
           <button class="chip" data-base="GBP">파운드 (GBP)</button>
         </div>
-        <div class="switcher" aria-label="기간 선택">
+        <div class="switcher" >
           <button class="chip active" data-days="30">최근 30일</button>
           <button class="chip" data-days="90">최근 90일</button>
           <button class="chip" data-days="180">최근 180일</button>
@@ -48,7 +48,7 @@
       </div>
     </section>
     <!-- ==== 오른쪽: 기준 환율/ 계산기 ==== -->
-    <section class="panel">
+    <section class="panel" id="left-panel">
       <!-- ==== 기준 환율 ==== -->
       <div class="quick-rates" id="quick-rates">
         <h3 class="quick-title">기준 환율</h3>
@@ -94,6 +94,10 @@
         <div class="rate-note" id="rate-note"></div>
       </div>
     </section>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/index.js"></script>
+
   </main>
 </body>
 </html>
