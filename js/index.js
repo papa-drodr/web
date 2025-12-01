@@ -4,6 +4,8 @@ const els = (s, r=document) => r.querySelectorAll(s);
 
 const fmt = new Intl.NumberFormat('ko-KR'); // 기본 소수점 자릿수 규칙을 그대로 사용
 const fmt0 = new Intl.NumberFormat('ko-KR',{maximumFractionDigits:0}); // 소수점은 표시하지 않고 반올림해서 정수로 만듦
+const fmt1 = new Intl.NumberFormat('ko-KR',{maximumFractionDigits:1});
+
 
 today = new Date();
 yyyy_mm_dd = d => d.toISOString().slice(0,10);
@@ -148,8 +150,59 @@ els('.chip').forEach(btn=>{
     })
 })
 
-(async function init(){
+// ---- 기준 환율 ----
+async function updateQuickRates(){
+    const codes = ['USD', 'JPY', 'EUR', 'GBP'];
+    const ids={USD:'qr-usd',JPY:'qr-jpy',EUR:'qr-eur',GBP:'qr-gbp'};
+    await Promise.all(codes.map(async c=>{
+        try{
+            const data = await fetchLatest(c); // 가장 최근 환율
+            const rate = data?.[lower(c)]?.krw; // 데이터가 없으면 무시
+            const box = document.getElementById(ids[c]);
+            box.textContent = (typeof rate==='number')?  `${fmt0.format(rate)} KRW` : '—';
+        }catch{ const box = document.getElementById(ids[c]); if(box) box.textContent= '—'}
+    }));
+    const up=el('#qr-updated'); if(up) up.textContent=`기준시간 ${new Date().toLocaleDateString('ko-KR')}`;
+}
+
+// ---- 계산기 ----
+async function convert(amount, from, to) {
+    const data = await fetchLatest(from);
+    const rate = data?.[lower(from)]?.[lower(to)];
+    if(typeof rate !== 'number' || ! Number.isFinite(rate)) throw new Error('환율 오류');
+    return { result : amount*rate, rate};   
+}
+el('#convert').addEventListener('click', async ()=>{
+    const a = parseFloat(el('#amount').value||'0');
+    const f = el('#from').value.trim();
+    const t = el('#to').value.trim();
+    if(!a || a<0){ alert('금액 확인'); return; }
+    try{
+        const d = await convert(a, f, t);
+        el('#convert-result').textContent = `= ${fmt1.format(d.result)} ${t}`;
+        el('#rate-note').textContent = `1 ${f} = ${fmt1.format(d.rate)} ${t}`;
+      }catch(e){ console.error(e); alert('환전 오류'); }
+    });
+
+
+
+async function init(){
     // 초기 탭은 그래프
-    setTab('graph');
-    drawChart();
-})();
+    setTab('graph'); // setTab에서 updateTitle() + drawChart() 호출함
+    updateQuickRates();
+}
+
+//DOM 로드 후에 스크립트 실행
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
+
+
+// ---- 축구 탭 ----
+const transfers = [
+    {name:"Neymar", year:"2017-08-03", fee:222e6},
+    {name:"Mbappe", year:"2018-07-01", fee:180e6},
+    {name:"Dembele", year:"2017-08-25", fee:148e6},
+    {name:"Isak", year:"2025-09-01", fee:145e6},
+    {name:"Coutinho", year:"2018-01-06", fee:135e6},
+];
