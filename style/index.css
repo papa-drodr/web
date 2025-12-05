@@ -203,3 +203,109 @@ input[type="number"]::-webkit-outer-spin-button {
     justify-content: flex-start;
     text-indent: 8px;
 }
+
+/* ---- 그래프 로딩  ----*/
+.loading-overlay{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: rgba(4, 7, 20, 0.8);
+    backdrop-filter: blur(2px);
+    z-index: 2;
+}
+.loading-overlay[hidden]{display:none;}
+
+.spinner{
+    width: 18px;
+    height: 18px;
+    border: 3px solid #ffffff44;
+    border-top-color:#ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    }
+.loading-text{
+    color:#dbe6ff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .2px;
+    }
+
+@keyframes spin{
+    to{transform: rotate(360deg);}
+    }
+
+/* ---- 축구탭 ---- */
+#soccer-title{margin: 0 0 8px;}
+.soccer-header{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px
+}
+.soccer-sub{
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0
+}
+.soccer-tag{
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--chip);
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid #ffffff33
+}
+.soccer-legend{
+    display: flex; 
+    gap: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 10px 2px 12px
+}
+.soccer-dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: middle
+}
+.soccer-dot--old{opacity:.5}
+.soccer-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted)
+}
+.soccer-table th,.soccer-table td{
+    padding: 4px 6px;
+    border-bottom: 1px solid #ffffff11;
+    text-align: left
+}
+.soccer-table th{
+    color:#cfe0ff;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase
+}
+.soccer-note{
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 8px
+}
+
+.muted{color:var(--muted);font-size:12px;margin:10px 2px 0}
+
+@media (max-width:900px){
+      main{grid-template-columns:1fr}
+      .chart-wrap{height:300px}
+      .qr-grid{grid-template-columns:repeat(2,1fr)}
+    }

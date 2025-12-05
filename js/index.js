@@ -18,7 +18,7 @@ function getStart(days){
 const lower = s => (s||'').toLowerCase();
 
 // ---- 현재 상태 ----
-const state = {base:"USD", days:30, chart:null};
+const state = {base:"USD", days:30, chart:null, soccerChart: null};
 
 // ---- 상태에 따른 그래프 제목 변환 ----
 const Moneytrans = {USD:'원/달러', JPY:'원/엔', EUR:'원/유로', GBP:'원/파운드'};
@@ -41,7 +41,13 @@ function setTab(view){
 
     if (btnG) btnG.setAttribute('aria-selected', g ? 'true' : "false");
     if (btnS) btnS.setAttribute('aria-selected', g ? 'false' : "true");
-    if(g){ updateTitle(); drawChart(); }
+    if(g){ 
+        updateTitle(); 
+        drawChart(); 
+    }
+    else{
+        drawSoccerChart();
+    }
 }
 
 // ---- 이벤트 핸들러 ----
@@ -69,72 +75,79 @@ async function drawChart() {
     const base = state.base.toUpperCase();
     const sym = "KRW";
 
-    // 최대 80번 request, 날짜 가져오기
-    const start = getStart(state.days);
-    const dates = [];
-    const MAX_REQ = 80;
-    const step = Math.max(1, Math.ceil(state.days / MAX_REQ)); //너무 많은 요청을 막는 간격
-    for(let d = new Date(start); d <= today; d.setDate(d.getDate()+step))
-        dates.push(new Date(d))
+    const loader = el('#graph-loading');
+    if (loader) loader.hidden = false;
 
-    const results = new Array(dates.length); //결과 배열
-    let cursor = 0;
-    const CONC = 6;
-    
-    async function worker() { //날짜마다 api에 요청
-        while (cursor < dates.length){
-            const i = cursor ++;
-            try{
-                const j = await fetchDaily(base, dates[i]);
-                // j = { usd: { krw: 1385 } } 구조 → 값 꺼내기
-                results[i] = j?.[lower(base)]?.[lower(sym)] ?? null;
-            }catch(e){
-                results[i] = null;
-            } 
+    try {
+        // 최대 80번 request, 날짜 가져오기
+        const start = getStart(state.days);
+        const dates = [];
+        const MAX_REQ = 80;
+        const step = Math.max(1, Math.ceil(state.days / MAX_REQ)); //너무 많은 요청을 막는 간격
+        for(let d = new Date(start); d <= today; d.setDate(d.getDate()+step))
+            dates.push(new Date(d))
+
+        const results = new Array(dates.length); //결과 배열
+        let cursor = 0;
+        const CONC = 6;
+        
+        async function worker() { //날짜마다 api에 요청
+            while (cursor < dates.length){
+                const i = cursor ++;
+                try{
+                    const j = await fetchDaily(base, dates[i]);
+                    // j = { usd: { krw: 1385 } } 구조 → 값 꺼내기
+                    results[i] = j?.[lower(base)]?.[lower(sym)] ?? null;
+                }catch(e){
+                    results[i] = null;
+                } 
+            }
         }
-    }
-    // worker 6개를 동시에 실행해서 병렬 처리
-    await Promise.all(Array.from({length:CONC}, ()=>worker()));
+        // worker 6개를 동시에 실행해서 병렬 처리
+        await Promise.all(Array.from({length:CONC}, ()=>worker()));
 
-    const labels = []; // 날짜
-    const values = []; // 환율
-    for (let i=0; i<results.length; i++){
-        const v = results[i];
-        if (typeof v==='number' && Number.isFinite(v)){
-            labels.push(yyyy_mm_dd(dates[i]));
-            values.push(v);
+        const labels = []; // 날짜
+        const values = []; // 환율
+        for (let i=0; i<results.length; i++){
+            const v = results[i];
+            if (typeof v==='number' && Number.isFinite(v)){
+                labels.push(yyyy_mm_dd(dates[i]));
+                values.push(v);
+            }
         }
-    }
-    if (!labels.length){
-        console.error('[drawChart] empty data');
-        return;
-    }
+        if (!labels.length){
+            console.error('[drawChart] empty data');
+            return;
+        }
 
-    const ctx = el('#chart').getContext('2d'); // 그래프를 그리는 canvas
-    if(state.chart) state.chart.destroy(); // 이미 있으면 제거
-    state.chart = new Chart(ctx, {
-        type: 'line', // 선 그래프
-        data: { 
-            labels, 
-            datasets: [{ 
-                label:`${base}→KRW`, // 제목
-                data:values, /// y축 환율 데이터
-                tension:.25, 
-                pointRadius:0, 
-                borderWidth:2 
-            }] 
-        },
-        options: {
-            responsive: true, // 반응형
-            maintainAspectRatio: false, // 높이/너비 고정 x
-            interaction: { mode: `index`, intersect: false },
-            scales: { // x, y 축 스타일
-                x: { ticks: { color:`#b7c0d1` }, grid: { color: "rgba(255,255,255,.08)"}},
-                y:{ ticks:{ color:'#b7c0d1', callback:v=>fmt.format(v) }, grid:{ color:'rgba(255,255,255,.08)' } }
+        const ctx = el('#chart').getContext('2d'); // 그래프를 그리는 canvas
+        if(state.chart) state.chart.destroy(); // 이미 있으면 제거
+        state.chart = new Chart(ctx, {
+            type: 'line', // 선 그래프
+            data: { 
+                labels, 
+                datasets: [{ 
+                    label:`${base}→KRW`, // 제목
+                    data:values, /// y축 환율 데이터
+                    tension:.25, 
+                    pointRadius:0, 
+                    borderWidth:2 
+                }] 
             },
-            plugins: { legend: { labels: { color: '#e9eef7'}}}
-        }
-    });
+            options: {
+                responsive: true, // 반응형
+                maintainAspectRatio: false, // 높이/너비 고정 x
+                interaction: { mode: `index`, intersect: false },
+                scales: { // x, y 축 스타일
+                    x: { ticks: { color:`#b7c0d1` }, grid: { color: "rgba(255,255,255,.08)"}},
+                    y:{ ticks:{ color:'#b7c0d1', callback:v=>fmt.format(v) }, grid:{ color:'rgba(255,255,255,.08)' } }
+                },
+                plugins: { legend: { labels: { color: '#e9eef7'}}}
+            }
+        });
+    } finally {
+    if (loader) loader.hidden = true;
+    }
 }
 
 // ---- 환율 전환 버튼(chip) ----
@@ -185,6 +198,138 @@ el('#convert').addEventListener('click', async ()=>{
     });
 
 
+// ---- 축구 탭 ----
+const transfers = [
+    {name:"Neymar",   year:"2017-08-03", fee:222e6},
+    {name:"Mbappe",   year:"2018-07-01", fee:180e6},
+    {name:"Dembele",  year:"2017-08-25", fee:148e6},
+    {name:"Isak",     year:"2025-09-01", fee:145e6},
+    {name:"Coutinho", year:"2018-01-06", fee:135e6},
+];
+
+// 이적 날짜별 당시 EUR→KRW 환율 단위: 1 EUR 당 KRW
+const TRANSFER_EUR_KRW = {
+    "2017-08-03": 1320, // Neymar
+    "2018-07-01": 1300, // Mbappe
+    "2017-08-25": 1330, // Dembele
+    "2025-09-01": 1500, // Isak (미래 값은 임의)
+    "2018-01-06": 1280  // Coutinho
+};
+
+// ===== 축구 탭 그래프 (고정 환율 사용) =====
+async function drawSoccerChart(){
+    const labels = transfers.map(t => t.name);
+
+    let nowRate = null;
+    try{
+      const latest = await fetchLatest('EUR');
+      if (latest && latest.eur && typeof latest.eur.krw === 'number') {
+        nowRate = latest.eur.krw;
+      }
+    }catch(e){
+      console.error('[soccer] latest EUR fetch fail', e);
+    }
+
+    if (typeof nowRate !== 'number' || !isFinite(nowRate)) {
+      console.error('[soccer] nowRate missing');
+      return;
+    }
+
+    const oldVals = [];
+    const newVals = [];
+    const rows    = [];
+
+    // 선수별 데이터 계산
+    for (const t of transfers){
+      // 이적 날짜 기준 환율 (없으면 현재 환율로 대체)
+        let rate = TRANSFER_EUR_KRW[t.year];
+        if (typeof rate !== 'number' || !isFinite(rate)) {
+            rate = nowRate;
+        }
+
+        const oldKrw = t.fee * rate;
+        const newKrw = t.fee * nowRate;
+
+        oldVals.push(oldKrw);
+        newVals.push(newKrw);
+
+        rows.push({
+            name   : t.name,
+            year   : t.year.slice(0,4),
+            fee    : t.fee,
+            rateOld: rate,
+            krwNew : newKrw
+        });
+    }
+
+    // 3) 차트 그리기
+    const ctx = el('#soccer-chart').getContext('2d');
+    if(state.soccerChart) state.soccerChart.destroy();
+    state.soccerChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '당시 환율 기준',
+            data: oldVals,
+            borderWidth: 1,
+            backgroundColor: 'rgba(90,169,255,0.4)'
+          },
+          {
+            label: '현재 환율 기준',
+            data: newVals,
+            borderWidth: 1,
+            backgroundColor: 'rgba(90,169,255,0.9)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: { color: '#b7c0d1' },
+            grid: { color: 'rgba(255,255,255,0.05)' }
+          },
+          y: {
+            ticks: {
+              color: '#b7c0d1',
+              callback: v => fmt0.format(v)
+            },
+            grid: { color: 'rgba(255,255,255,0.08)' }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#e9eef7' } },
+          tooltip: {
+            callbacks: {
+              label: function(ctx){
+                const v = ctx.parsed.y;
+                return ctx.dataset.label + ': ' + fmt0.format(v) + ' KRW';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 4) 테이블 채우기
+    const tbody = el('#soccer-tbody');
+    if (tbody){
+      tbody.innerHTML = rows.map(function(r){
+        return '<tr>' +
+          '<td>' + r.name + '</td>' +
+          '<td>' + r.year + '</td>' +
+          '<td>' + fmt1.format(r.fee / 1e6) + ' M€</td>' +
+          '<td>' + (r.rateOld ? fmt0.format(r.rateOld) : '—') + '</td>' +
+          '<td>' + (r.krwNew ? fmt0.format(r.krwNew) : '—') + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+  }
+
 
 async function init(){
     // 초기 탭은 그래프
@@ -196,13 +341,3 @@ async function init(){
 document.addEventListener('DOMContentLoaded', () => {
     init();
 });
-
-
-// ---- 축구 탭 ----
-const transfers = [
-    {name:"Neymar", year:"2017-08-03", fee:222e6},
-    {name:"Mbappe", year:"2018-07-01", fee:180e6},
-    {name:"Dembele", year:"2017-08-25", fee:148e6},
-    {name:"Isak", year:"2025-09-01", fee:145e6},
-    {name:"Coutinho", year:"2018-01-06", fee:135e6},
-];
