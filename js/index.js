@@ -6,7 +6,6 @@ const fmt = new Intl.NumberFormat('ko-KR'); // 기본 소수점 자릿수 규칙
 const fmt0 = new Intl.NumberFormat('ko-KR',{maximumFractionDigits:0}); // 소수점은 표시하지 않고 반올림해서 정수로 만듦
 const fmt1 = new Intl.NumberFormat('ko-KR',{maximumFractionDigits:1});
 
-
 today = new Date();
 yyyy_mm_dd = d => d.toISOString().slice(0,10);
 function getStart(days){ 
